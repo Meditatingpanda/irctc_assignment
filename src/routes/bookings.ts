@@ -10,8 +10,12 @@ router.post("/", authenticateToken as any, async (req: any, res: any) => {
   const { trainId } = req.body;
   const userId = req.user!.userId;
 
+  if (!trainId) {
+    return res.status(400).json({ error: "Train ID is required" });
+  }
+
   try {
-    const booking = await bookSeat(userId, trainId);
+    const booking = await bookSeat(userId, parseInt(trainId));
     res.json(booking);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
