@@ -35,7 +35,6 @@ router.post(
 
 router.get(
   "/availability",
-  authenticateToken as any,
   async (req: any, res: any) => {
     const { source, destination } = req.query;
     if (!source || !destination) {
