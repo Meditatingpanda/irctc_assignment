@@ -18,15 +18,128 @@ This API provides endpoints for managing train bookings, similar to the IRCTC sy
 
 ## API Endpoints
 
-### Authentication
+## Roles
 
-- POST /auth/register - Register a new user
-- POST /auth/login - Login and receive a JWT token
+There are two user roles in the system:
 
-### Trains
+- `USER`: Regular user with limited access
+- `ADMIN`: Administrator with full access to all endpoints
 
-- POST /trains - Add a new train (Admin only)
-- GET /trains/availability - Get train availabilities between source and destination
+## Authentication
+
+### Register a new user
+
+```http
+POST /auth/register
+```
+
+| Parameter   | Type     | Description                                      |
+| :---------- | :------- | :----------------------------------------------- |
+| `username`  | `string` | **Required**. Username for the new user          |
+| `password`  | `string` | **Required**. Password for the new user          |
+| `role`      | `string` | **Required**. User role (ADMIN or USER)          |
+| `x-api-key` | `string` | **Required for ADMIN**. API key for admin access |
+
+Note: To register an ADMIN user, you must provide a valid `x-api-key` in the request headers.
+
+### Login
+
+```http
+POST /auth/login
+```
+
+| Parameter  | Type     | Description                        |
+| :--------- | :------- | :--------------------------------- |
+| `username` | `string` | **Required**. Username of the user |
+| `password` | `string` | **Required**. Password of the user |
+
+## Trains
+
+### Add a new train (Admin only)
+
+```http
+POST /trains/add-trains
+```
+
+| Parameter       | Type     | Description                                      |
+| :-------------- | :------- | :----------------------------------------------- |
+| `name`          | `string` | **Required**. Name of the train                  |
+| `source`        | `string` | **Required**. Source station of the train        |
+| `destination`   | `string` | **Required**. Destination station of the train   |
+| `totalSeats`    | `number` | **Required**. Total number of seats in the train |
+| `Authorization` | `string` | **Required**. JWT token for authentication       |
+
+### Update a train (Admin only)
+
+```http
+POST /trains/update-train/${id}
+```
+
+| Parameter       | Type     | Description                                 |
+| :-------------- | :------- | :------------------------------------------ |
+| `id`            | `number` | **Required**. ID of the train to update     |
+| `name`          | `string` | **Required**. Updated name of the train     |
+| `source`        | `string` | **Required**. Updated source station        |
+| `destination`   | `string` | **Required**. Updated destination station   |
+| `totalSeats`    | `number` | **Required**. Updated total number of seats |
+| `Authorization` | `string` | **Required**. JWT token for authentication  |
+
+### Get train availabilities
+
+```http
+GET /trains/availability
+```
+
+| Parameter       | Type     | Description                                    |
+| :-------------- | :------- | :--------------------------------------------- |
+| `source`        | `string` | **Required**. Source station to search from    |
+| `destination`   | `string` | **Required**. Destination station to search to |
+| `Authorization` | `string` | **Required**. JWT token for authentication     |
+
+## Bookings
+
+### Book a seat
+
+```http
+POST /bookings
+```
+
+| Parameter       | Type     | Description                                     |
+| :-------------- | :------- | :---------------------------------------------- |
+| `trainId`       | `number` | **Required**. ID of the train to book a seat on |
+| `Authorization` | `string` | **Required**. JWT token for authentication      |
+
+### Get booking details
+
+```http
+GET /bookings/${id}
+```
+
+| Parameter       | Type     | Description                                |
+| :-------------- | :------- | :----------------------------------------- |
+| `id`            | `number` | **Required**. ID of the booking to fetch   |
+| `Authorization` | `string` | **Required**. JWT token for authentication |
+
+## Admin-only Routes
+
+The following routes are accessible only to users with the ADMIN role:
+
+1. Add a new train: `POST /trains/add-trains`
+2. Update a train: `POST /trains/update-train/${id}`
+
+All other routes are accessible to both USER and ADMIN roles, but the data returned may be filtered based on the user's role and permissions.
+
+## Authentication Notes
+
+- All routes except `/auth/register` and `/auth/login` require a valid JWT token in the `Authorization` header.
+- The JWT token should be included in the `Authorization` header as a Bearer token: `Authorization: Bearer <your_jwt_token>`
+- Admin-only routes will check for both a valid JWT token and the ADMIN role before granting access.
+
+## Error Handling
+
+- If an unauthorized user attempts to access an admin-only route, the API will return a 403 Forbidden error.
+- Invalid or expired JWT tokens will result in a 401 Unauthorized error.
+- Other errors (e.g., not found, bad request) will return appropriate HTTP status codes and error messages.
 
 ### Bookings
 
