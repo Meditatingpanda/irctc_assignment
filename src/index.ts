@@ -11,6 +11,11 @@ dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
+// Add this block to log database connection
+prisma.$connect()
+  .then(() => console.log('Database connected successfully'))
+  .catch((error) => console.error('Database connection failed:', error));
+
 app.use(express.json());
 
 app.use('/auth', authRoutes);
@@ -23,5 +28,5 @@ app.use(notFoundHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
 });
