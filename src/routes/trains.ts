@@ -18,6 +18,21 @@ router.post(
   }
 );
 
+router.post(
+  "/update-train/:id",
+  authenticateToken as any,
+  isAdmin as any,
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, source, destination, totalSeats } = req.body;
+    const train = await prisma.train.update({
+      where: { id: parseInt(id) },
+      data: { name, source, destination, totalSeats: parseInt(totalSeats) },
+    });
+    res.json(train);
+  }
+);
+
 router.get("/availability", async (req: any, res: any) => {
   const { source, destination } = req.query;
   if (!source || !destination) {
