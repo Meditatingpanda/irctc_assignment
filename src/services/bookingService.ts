@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export async function bookSeat(userId: number, trainId: number) {
   return await prisma.$transaction(
-    async (prisma: PrismaClient) => {
+    async (prisma) => {
       const train = await prisma.train.findUnique({
         where: { id: trainId },
         include: { bookings: true },
