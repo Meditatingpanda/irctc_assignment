@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import trainRoutes from './routes/trains';
 import bookingRoutes from './routes/bookings';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -15,6 +16,10 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/trains', trainRoutes);
 app.use('/bookings', bookingRoutes);
+
+// error handling middleware
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
