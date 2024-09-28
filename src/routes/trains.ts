@@ -33,26 +33,30 @@ router.post(
   }
 );
 
-router.get("/availability", async (req: any, res: any) => {
-  const { source, destination } = req.query;
-  if (!source || !destination) {
-    return res
-      .status(400)
-      .json({ error: "Source and destination are required" });
+router.get(
+  "/availability",
+  authenticateToken as any,
+  async (req: any, res: any) => {
+    const { source, destination } = req.query;
+    if (!source || !destination) {
+      return res
+        .status(400)
+        .json({ error: "Source and destination are required" });
+    }
+    const trains = await prisma.train.findMany({
+      where: { source: source as string, destination: destination as string },
+      include: {
+        bookings: true,
+      },
+    });
+
+    const availabilities = trains.map((train: any) => ({
+      ...train,
+      availableSeats: train.totalSeats - train.bookings.length,
+    }));
+
+    res.json(availabilities);
   }
-  const trains = await prisma.train.findMany({
-    where: { source: source as string, destination: destination as string },
-    include: {
-      bookings: true,
-    },
-  });
-
-  const availabilities = trains.map((train: any) => ({
-    ...train,
-    availableSeats: train.totalSeats - train.bookings.length,
-  }));
-
-  res.json(availabilities);
-});
+);
 
 export default router;
