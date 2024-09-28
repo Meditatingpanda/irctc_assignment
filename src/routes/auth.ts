@@ -2,6 +2,7 @@ import express from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import UserRole from "../enums/Role";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -10,7 +11,7 @@ router.post("/register", async (req: any, res: any) => {
   const { username, password, role } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  if (role === "ADMIN") {
+  if (role === UserRole.ADMIN) {
     const apiKey = req.headers["x-api-key"];
     if (apiKey !== process.env.ADMIN_API_KEY) {
       return res.status(403).json({ error: "Invalid API key" });

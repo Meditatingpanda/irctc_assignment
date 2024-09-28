@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 interface CustomError extends Error {
   statusCode?: number;
@@ -13,7 +13,7 @@ export const errorHandler = (
   console.error(err.stack);
 
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   res.status(statusCode).json({
     error: {
@@ -28,7 +28,7 @@ export const notFoundHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const error: CustomError = new Error('Not Found');
+  const error: CustomError = new Error("Not Found");
   error.statusCode = 404;
   next(error);
 };

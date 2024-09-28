@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import UserRole from "../enums/Role";
 
 interface AuthRequest extends Request {
   user?: {
@@ -30,7 +31,7 @@ export const isAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user?.role !== "ADMIN") {
+  if (req.user?.role !== UserRole.ADMIN) {
     return res.status(403).json({ error: "Admin access required" });
   }
   next();
